@@ -1,0 +1,69 @@
+/*
+ * Clase 3
+ * Organización de Lenguajes y Compiladores 1 "A"
+ * Aux. José Puac
+ */
+
+package Analizador; 
+import java_cup.runtime.*;
+
+parser code 
+{:
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) +
+        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }  
+:} 
+
+terminal String PTCOMA,PARIZQ,PARDER,CORIZQ,CORDER;
+terminal String MAS,MENOS,POR,DIVIDIDO;
+terminal String ENTERO;
+terminal String DECIMAL;
+terminal String UMENOS;
+terminal String REVALUAR;
+
+non terminal ini;
+non terminal instrucciones;
+non terminal instruccion;
+non terminal Double expresion;
+
+precedence left MAS,MENOS;
+precedence left POR,DIVIDIDO;
+precedence right UMENOS; 
+
+start with ini; 
+
+ini::=instrucciones;
+
+instrucciones ::= instruccion instrucciones
+ | instruccion
+ | error instrucciones
+; 
+
+instruccion ::= 
+   REVALUAR CORIZQ expresion:a CORDER PTCOMA{:System.out.println("El valor de la expresión es: "+a);:}
+;
+
+expresion  ::= 
+    MENOS expresion:a                      {:RESULT=a*-1;:}%prec UMENOS  
+ |  expresion:a MAS        expresion:b     {:RESULT=a+b;:}
+ |  expresion:a MENOS      expresion:b     {:RESULT=a-b;:}
+ |  expresion:a POR        expresion:b     {:RESULT=a*b;:}
+ |  expresion:a DIVIDIDO   expresion:b     {:RESULT=a/b;:}
+ |  ENTERO:a                               {:RESULT=new Double(a);:}
+ |  DECIMAL:a                              {:RESULT=new Double(a);:}
+ |  PARIZQ expresion:a PARDER              {:RESULT=a;:}
+;

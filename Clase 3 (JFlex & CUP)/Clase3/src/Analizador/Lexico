@@ -1,0 +1,54 @@
+/*
+ * Clase 3
+ * Organización de Lenguajes y Compiladores 1 "A"
+ * Aux. José Puac
+ */
+
+package Analizador;
+import java_cup.runtime.Symbol; 
+
+%% 
+%class Lexico
+%public 
+%line 
+%char 
+%cup 
+%unicode
+%ignorecase
+
+%init{ 
+    yyline = 1; 
+    yychar = 1; 
+%init} 
+
+BLANCOS=[ \r\t]+
+D=[0-9]+
+DD=[0-9]+("."[  |0-9]+)?
+
+%%
+
+<YYINITIAL>{
+    
+    "Evaluar" {return new Symbol(sym.REVALUAR,yyline,yychar, yytext());} 
+
+    ";" {return new Symbol(sym.PTCOMA,yyline,yychar, yytext());} 
+    "(" {return new Symbol(sym.PARIZQ,yyline,yychar, yytext());} 
+    ")" {return new Symbol(sym.PARDER,yyline,yychar, yytext());} 
+    "[" {return new Symbol(sym.CORIZQ,yyline,yychar, yytext());} 
+    "]" {return new Symbol(sym.CORDER,yyline,yychar, yytext());} 
+
+    "+" {return new Symbol(sym.MAS,yyline,yychar, yytext());} 
+    "-" {return new Symbol(sym.MENOS,yyline,yychar, yytext());} 
+    "*" {return new Symbol(sym.POR,yyline,yychar, yytext());} 
+    "/" {return new Symbol(sym.DIVIDIDO,yyline,yychar, yytext());} 
+
+    \n {yychar=1;}
+
+    {BLANCOS} {} 
+    {D} {return new Symbol(sym.ENTERO,yyline,yychar, yytext());} 
+    {DD} {return new Symbol(sym.DECIMAL,yyline,yychar, yytext());} 
+
+    . {
+        System.out.println("Este es un error lexico: "+yytext()+", en la linea: "+yyline+", en la columna: "+yychar);
+    }
+}
