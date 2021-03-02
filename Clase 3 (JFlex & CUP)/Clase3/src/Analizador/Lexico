@@ -1,11 +1,13 @@
 /*
- * Clase 3
+ * Clase 5
  * Organización de Lenguajes y Compiladores 1 "A"
  * Aux. José Puac
  */
 
 package Analizador;
 import java_cup.runtime.Symbol; 
+import Errores.Excepcion;
+import java.util.ArrayList;
 
 %% 
 %class Lexico
@@ -16,9 +18,14 @@ import java_cup.runtime.Symbol;
 %unicode
 %ignorecase
 
+%{
+    public ArrayList<Excepcion> Errores; 
+%}
+
 %init{ 
     yyline = 1; 
     yychar = 1; 
+    Errores = new ArrayList();
 %init} 
 
 BLANCOS=[ \r\t]+
@@ -49,6 +56,6 @@ DD=[0-9]+("."[  |0-9]+)?
     {DD} {return new Symbol(sym.DECIMAL,yyline,yychar, yytext());} 
 
     . {
-        System.out.println("Este es un error lexico: "+yytext()+", en la linea: "+yyline+", en la columna: "+yychar);
+        Errores.add(new Excepcion("Léxico", "Caracter no válido detectado: " + yytext(), yyline + "", yychar + ""));
     }
 }

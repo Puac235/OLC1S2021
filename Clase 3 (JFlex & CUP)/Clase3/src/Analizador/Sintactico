@@ -6,15 +6,17 @@
 
 package Analizador; 
 import java_cup.runtime.*;
+import Errores.Excepcion;
+import java.util.ArrayList;
 
 parser code 
 {:
+    public ArrayList<Excepcion> Errores = new ArrayList();
     /**
      * Método al que se llama automáticamente ante algún error sintactico.
      **/ 
     public void syntax_error(Symbol s){ 
-        System.out.println("Error Sintáctico en la Línea " + (s.left) +
-        " Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+        Errores.add(new Excepcion("Sintáctico", "Error de sintaxis detectado. Se detectó: " + s.value, s.left + "", s.right + ""));
     } 
 
     /**
@@ -25,7 +27,11 @@ parser code
         System.out.println("Error síntactico irrecuperable en la Línea " + 
         (s.left)+ " Columna "+s.right+". Componente " + s.value + 
         " no reconocido."); 
-    }  
+    }
+    
+    public ArrayList<Excepcion> getErrores(){
+        return Errores;
+    }
 :} 
 
 terminal String PTCOMA,PARIZQ,PARDER,CORIZQ,CORDER;
@@ -50,11 +56,11 @@ ini::=instrucciones;
 
 instrucciones ::= instruccion instrucciones
  | instruccion
- | error instrucciones
 ; 
 
 instruccion ::= 
    REVALUAR CORIZQ expresion:a CORDER PTCOMA{:System.out.println("El valor de la expresión es: "+a);:}
+   | error PTCOMA
 ;
 
 expresion  ::= 
