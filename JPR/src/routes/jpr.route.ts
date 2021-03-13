@@ -6,6 +6,6 @@ import {controller} from '../controllers/jpr.controller';
 
 router.get('/',controller.helloWorld);
 
-router.get('/interpretar',controller.helloWorld);
+router.get('/interpretar',controller.interpretar);
 
 export default router;
