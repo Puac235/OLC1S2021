@@ -1,0 +1,18 @@
+{
+  "name": "jison",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jison": "jison grammar.jison",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jison": "^0.4.18",
+    "nodemon": "^2.0.7"
+  }
+}
