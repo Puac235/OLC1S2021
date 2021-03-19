@@ -1,6 +1,9 @@
-/**
- * Ejemplo mi primer proyecto con Jison utilizando Nodejs en Ubuntu
- */
+/*
+    Organizacion de Lenguajes y Compiladores 1 "A"
+    José Puac
+    Clase 8
+    Jison
+*/
 
 /* Definición Léxica */
 %lex
