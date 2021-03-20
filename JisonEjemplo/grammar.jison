@@ -53,13 +53,13 @@ ini
 instrucciones
 	: instruccion instrucciones
 	| instruccion
-	| error { console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
 ;
 
 instruccion
 	: REVALUAR CORIZQ expresion CORDER PTCOMA {
 		console.log('El valor de la expresión es: ' + $3);
 	}
+	| error PTCOMA{ console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
 ;
 
 expresion
