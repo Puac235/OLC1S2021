@@ -33,7 +33,7 @@ export default class Arbol {
     }
 
     public updateConsola(update:String){
-        this.consola = `${this.consola}\n${update}`;
+        this.consola = `${this.consola}${update}\n`;
     }
 
     public getGlobal():tablaSimbolos{

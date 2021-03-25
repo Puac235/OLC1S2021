@@ -30,6 +30,16 @@
 .                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
 /lex
 
+%{
+    const Excepcion = require('./Excepciones/Excepcion');
+    const Tipo = require('./tablaSimbolos/Tipo');
+    const Arbol = require('./tablaSimbolos/Arbol');
+    const Primitivo = require('./Expresiones/Primitivo');
+    const Imprimir = require('./Instrucciones/Imprimir');
+%}
+
+// PRECEDENCIA
+
 %start INICIO
 
 %% /* Definición de la gramática */
@@ -49,11 +59,11 @@ INSTRUCCION
 ;
 
 DEFPRINT
-    : RIMPRIMIR PARIZQ EXPRESION PARDER PTCOMA  {/*NODO IMPRIMIR*/}
+    : RIMPRIMIR PARIZQ EXPRESION PARDER PTCOMA  { $$ = new Imprimir.default($3, @1.first_line, @1.first_column); }
 ;
 
 EXPRESION
-    : ENTERO {/*NODO PRIMITIVO*/}
-    | DECIMAL {/*NODO PRIMITIVO*/}
-    | CADENA {/*NODO PRIMITIVO*/}
+    : ENTERO { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.ENTERO),$1, @1.first_line, @1.first_column); }
+    | DECIMAL { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.DECIMAL),$1, @1.first_line, @1.first_column); }
+    | CADENA { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.CADENA),$1, @1.first_line, @1.first_column); }
 ;
