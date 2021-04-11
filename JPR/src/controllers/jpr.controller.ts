@@ -8,7 +8,7 @@ var Errors:Array<Excepcion> = new Array<Excepcion>();
 class rjpController{
 
     public helloWorld (req:Request,res:Response){
-        res.send("Hola Mundo RJP :D");
+        res.send("Hola Mundo JPR :D");
     }
     public interpretar (req:Request,res:Response){
         var parser = require('./analizador/jpr');

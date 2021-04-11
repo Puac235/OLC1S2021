@@ -1,0 +1,96 @@
+
+
+package Analizador;
+import java_cup.runtime.Symbol; 
+
+%% 
+%cupsym sym 
+%class Lexico
+%public 
+%line
+%column 
+%char 
+%cup 
+%unicode
+%ignorecase
+
+%{
+    StringBuffer NuevoString = new StringBuffer();
+    StringBuffer NuevoIdentificador = new StringBuffer(); 
+%}
+
+%init{ 
+    
+    yyline = 1; 
+    yychar = 1; 
+%init}
+
+BLANCOS=\t|\f|" "|\r
+D =[0-9]+
+DD =[0-9]+"."[0-9]+
+LETRA =[a-zA-ZÑñ]
+COMENTUNILINEA = ("//".*\r\n)|("//".*\n)|("//".*\r)
+COMENTMULTILINEA ="/*"((.*)|\r\n|\n|\r)*"*/"
+BOOLEANO = "true"|"false"
+IDEN = {LETRA}({LETRA}|{D}|"_")*
+CARACTER = [\']([^\t\'\"\n]|(\\\")|(\\n)|(\\\')|(\\t))?[\']
+
+%state STRING
+
+%%
+
+
+
+<YYINITIAL>{
+    {COMENTUNILINEA} {} 
+    {COMENTMULTILINEA} {} 
+    {BOOLEANO} {return new Symbol(sym.BOOLEANO,yyline,yychar, yytext());}
+    {BLANCOS} {} 
+    {D} {return new Symbol(sym.ENTERO,yyline,yychar, yytext());} 
+    {DD} {return new Symbol(sym.DECIMAL,yyline,yychar, yytext());} 
+    {CARACTER} {return new Symbol(sym.CARACTER,yyline,yychar, yytext().replace("'",""));}
+
+    "\"" {yybegin(STRING); NuevoString.setLength(0);} 
+    
+
+
+    //---------------AREA PALABRAS RESERVADAS-------------------------------
+    "imprimir"           {return new Symbol(sym.RPRINT,yyline,yychar, yytext());}
+
+
+    //------------------------------SIMBOLOS---------------------------------
+    "("           {return new Symbol(sym.PARA,yyline,yychar, yytext());}
+    ")"           {return new Symbol(sym.PARC,yyline,yychar, yytext());}
+    "+"           {return new Symbol(sym.MAS,yyline,yychar, yytext());}
+    "-"           {return new Symbol(sym.MENOS,yyline,yychar, yytext());}
+    "*"           {return new Symbol(sym.POR,yyline,yychar, yytext());}
+    "/"           {return new Symbol(sym.DIV,yyline,yychar, yytext());}
+    "="           {return new Symbol(sym.IGUAL,yyline,yychar, yytext());}
+    "<"           {return new Symbol(sym.MENORQUE,yyline,yychar, yytext());}
+    ">"           {return new Symbol(sym.MAYORQUE,yyline,yychar, yytext());}
+    "^"           {return new Symbol(sym.POT,yyline,yychar, yytext());}
+    ";"           {return new Symbol(sym.PUNTOYCOMA,yyline,yychar, yytext());}
+    "!"           {return new Symbol(sym.NOT,yyline,yychar, yytext());}
+    "||"           {return new Symbol(sym.OR,yyline,yychar, yytext());}
+    "%"           {return new Symbol(sym.MOD,yyline,yychar, yytext());}
+    "&&"           {return new Symbol(sym.AND,yyline,yychar, yytext());}
+
+    {IDEN}        {return new Symbol(sym.IDENTIFICADOR,yyline,yychar,yytext());}
+
+    \n {yychar=1;}
+
+    . {
+        System.out.println("Este es un error lexico: "+yytext()+", en la linea: "+yyline+", en la columna: "+yychar);
+    }
+}
+
+<STRING>{
+    "\"" {yybegin(YYINITIAL); return new Symbol(sym.CADENA,yyline,yychar,NuevoString.toString());}
+    "\\\"" {NuevoString.append('\"');}
+    "\\\\" {NuevoString.append("\\");}
+    "\\n" {NuevoString.append('\n');}
+    "\\r" {NuevoString.append('\r');}
+    "\\t" {NuevoString.append('\t');}
+
+    . {NuevoString.append(yytext());}
+}

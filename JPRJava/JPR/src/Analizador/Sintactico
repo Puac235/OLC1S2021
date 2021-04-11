@@ -1,0 +1,120 @@
+
+
+package Analizador; 
+
+import Abstract.AST;
+import Expresiones.Aritmetica;
+import Expresiones.Relacional;
+import Expresiones.Logica;
+import Expresiones.Primitivo;
+import Expresiones.Aritmetica.OperadorAritmetico;
+import Expresiones.Logica.OperadorLogico;
+import Expresiones.Relacional.OperadorRelacional;
+import Instrucciones.Imprimir;
+import TablaSimbolos.Arbol;
+import TablaSimbolos.Tipo;
+import TablaSimbolos.Tipo.Tipos;
+import java.util.ArrayList;
+import java_cup.runtime.*;
+
+parser code 
+{:
+    /**
+     * Variable en la que se almacena el arbol de sintaxis abstracta que se 
+     * genera luego del analisis sintáctico.
+     */
+    public ArrayList<AST> AST;
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Symbol s){ 
+            System.err.println("Error Sintáctico en la Línea " + (s.left) +" Columna "+s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+    /**
+     * Método al que se llama en el momento en que ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+            System.err.println("Error síntactico irrecuperable en la Línea " + (s.left)+ " Columna "+s.right+". Componente " + s.value + " no reconocido."); 
+    } 
+
+    public Arbol getAST() {
+        return new Arbol(AST);
+    }
+    
+:} 
+
+terminal String IDENTIFICADOR, CADENA, ENTERO, DECIMAL, BOOLEANO, CARACTER;
+terminal String RPRINT;
+
+terminal String LLAVEA, LLAVEC, PARA, PARC;
+terminal String MAS, MENOS, POR, DIV, POT, MOD;
+terminal String IGUAL, MENORQUE, MAYORQUE, AND, OR, NOT;
+terminal String PUNTOYCOMA;
+
+terminal String UMENOS;
+terminal String DIF;
+
+non terminal ini;
+non terminal ArrayList<AST> instrucciones;
+non terminal AST instruccion;
+non terminal AST defprint;
+
+non terminal AST expresion;
+
+precedence left OR;
+precedence left AND;
+precedence left IGUAL, NOT;
+precedence left MAYORQUE, MENORQUE;
+precedence left MAS,MENOS;
+precedence left POR,DIV,MOD;
+precedence left POT;
+precedence right UMENOS, DIF;
+
+
+start with ini; 
+
+ini::=instrucciones:a{:
+    //se guarda el AST, que es la lista principal de instrucciones en la variable
+    //AST que se definió dentro del parser
+    parser.AST=a;
+:}
+;
+
+instrucciones ::= 
+   instrucciones:a instruccion:b{:RESULT=a; RESULT.add(b);:}
+ | instruccion:a{:RESULT=new ArrayList<>(); RESULT.add(a);:}
+; 
+
+instruccion ::= 
+   defprint:a PUNTOYCOMA         {:RESULT = a;:}
+ | error:e PUNTOYCOMA  {: System.out.println("Este es un error sintactico D:"); :}
+;
+
+defprint ::=
+   RPRINT PARA expresion:a PARC {:RESULT= new Imprimir(a, aleft, aright);:}
+;
+
+expresion ::=
+   expresion:a MAS expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.SUMA, aleft, aright);:}
+ | expresion:a MENOS expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.RESTA, aleft, aright);:}
+ | expresion:a POR expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.MULTIPLICACION, aleft, aright);:}
+ | expresion:a DIV expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.DIVISION, aleft, aright);:}
+ | expresion:a POT expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.POTENCIA, aleft, aright);:}
+ | expresion:a MOD expresion:b {:RESULT = new Aritmetica(a, b, OperadorAritmetico.MODULO, aleft, aright);:}
+ | MENOS expresion:a {:RESULT= new Aritmetica(a, OperadorAritmetico.MENOSUNARIO, aleft, aright);:} %prec UMENOS
+ | expresion:a IGUAL IGUAL expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.IGUALACION, aleft, aright);:}
+ | expresion:a NOT IGUAL expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.DIFERENCIACION, aleft, aright);:}
+ | expresion:a MENORQUE expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.MENORQUE, aleft, aright);:}
+ | expresion:a MAYORQUE expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.MAYORQUE, aleft, aright);:}
+ | expresion:a MENORQUE IGUAL expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.MENORIGUAL, aleft, aright);:}
+ | expresion:a MAYORQUE IGUAL expresion:b {:RESULT = new Relacional(a, b, OperadorRelacional.MAYORIGUAL, aleft, aright);:}
+ | expresion:a AND expresion:b {:RESULT = new Logica(a, b, OperadorLogico.AND, aleft, aright);:}
+ | expresion:a OR expresion:b {:RESULT = new Logica(a, b, OperadorLogico.OR, aleft, aright);:}
+ | NOT expresion:a {:RESULT= new Logica(a, OperadorLogico.NOT, aleft, aright);:} %prec DIF
+ | PARA expresion:a PARC {:RESULT = a;:}
+ | ENTERO:a     {:RESULT= new Primitivo(new Tipo(Tipos.ENTERO), Integer.parseInt(a), aleft, aright);:}
+ | DECIMAL:a    {:RESULT= new Primitivo(new Tipo(Tipos.DECIMAL), Double.parseDouble(a), aleft, aright);:}
+ | BOOLEANO:a   {:RESULT= new Primitivo(new Tipo(Tipos.BOOLEANO), Boolean.parseBoolean(a), aleft, aright);:}
+ | CADENA:a     {:RESULT= new Primitivo(new Tipo(Tipos.CADENA), a, aleft, aright);:}
+ | CARACTER:a   {:RESULT= new Primitivo(new Tipo(Tipos.CARACTER), a, aleft, aright);:}
+;

@@ -12,17 +12,20 @@
 
 %%
 
-"imprimir"           return 'RIMPRIMIR';
+"imprimir"          return 'RIMPRIMIR';
 ";"                 return 'PTCOMA';
 "("                 return 'PARIZQ';
 ")"                 return 'PARDER';
+
+"+"					return 'MAS';
+"-"					return 'MENOS';
 
 /* Espacios en blanco */
 [ \r\t]+            {}
 \n                  {}
 
 \"[^\"]*\"				{ yytext = yytext.substr(1,yyleng-2); 	return 'CADENA'; }
-[0-9]+("."[0-9]+)?\b    return 'DECIMAL';
+[0-9]+("."[0-9]+)\b     return 'DECIMAL';
 [0-9]+\b                return 'ENTERO';
 
 <<EOF>>                 return 'EOF';
@@ -36,9 +39,11 @@
     const Arbol = require('./tablaSimbolos/Arbol');
     const Primitivo = require('./Expresiones/Primitivo');
     const Imprimir = require('./Instrucciones/Imprimir');
+    const Aritmetica = require('./Expresiones/Aritmetica');
 %}
 
 // PRECEDENCIA
+%left 'MAS' 'MENOS'
 
 %start INICIO
 
@@ -63,7 +68,9 @@ DEFPRINT
 ;
 
 EXPRESION
-    : ENTERO { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.ENTERO),$1, @1.first_line, @1.first_column); }
-    | DECIMAL { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.DECIMAL),$1, @1.first_line, @1.first_column); }
-    | CADENA { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.CADENA),$1, @1.first_line, @1.first_column); }
+    : EXPRESION MAS EXPRESION           { $$ = new Aritmetica.default( Aritmetica.OperadorAritmetico.SUMA, @1.first_line, @1.first_column, $1, $3); }
+    | EXPRESION MENOS EXPRESION         { $$ = new Aritmetica.default( Aritmetica.OperadorAritmetico.RESTA, @1.first_line, @1.first_column, $1, $3); }
+    | ENTERO                            { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.ENTERO),$1, @1.first_line, @1.first_column); }
+    | DECIMAL                           { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.DECIMAL),$1, @1.first_line, @1.first_column); }
+    | CADENA                            { $$ = new Primitivo.default( new Tipo.default(Tipo.tipos.CADENA),$1, @1.first_line, @1.first_column); }
 ;

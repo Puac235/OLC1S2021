@@ -4,7 +4,7 @@ import Tipo, {tipos} from "./Tipo";
 export default class tablaSimbolos
 {
     public tabla: Map<String, Simbolo>;
-    private anterior: tablaSimbolos | any;
+    private anterior: tablaSimbolos | any;// TABLA DE SIMBOLOS ANTERIOR
     private tipo: Tipo;
     //private funciones: Array<Func>;
 
@@ -15,7 +15,7 @@ export default class tablaSimbolos
         this.tipo = new Tipo(tipos.ENTERO);
     }
 
-    public setVariable(simbolo:Simbolo)
+    public setVariable(simbolo:Simbolo)//DECLARACION
     {
         for(var e: tablaSimbolos = this; e != null; e = e.getAnterior())
         {
