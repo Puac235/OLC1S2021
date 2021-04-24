@@ -4,20 +4,15 @@ import Abstract.AST;
 import Abstract.nodoAST;
 import Excepciones.Excepcion;
 import TablaSimbolos.Arbol;
-import TablaSimbolos.Simbolo;
 import TablaSimbolos.Tabla;
-import TablaSimbolos.Tipo;
-import TablaSimbolos.Tipo.Tipos;
-import java.util.ArrayList;
-import javafx.scene.control.TextArea;
 
 /**
  *
- * @author Pavel
+ * @author josef
  */
 public class Imprimir extends AST {
 
-    private AST expresion;
+    private final AST expresion;
 
     public Imprimir(AST expresion, int fila, int columna) {
         this.expresion = expresion;

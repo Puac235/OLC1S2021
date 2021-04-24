@@ -6,7 +6,6 @@ import Excepciones.Excepcion;
 import TablaSimbolos.Arbol;
 import TablaSimbolos.Tabla;
 import TablaSimbolos.Tipo;
-import java.util.Objects;
 
 /**
  *

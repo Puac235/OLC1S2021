@@ -5,10 +5,6 @@
  */
 package Abstract;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -22,7 +18,6 @@ public class nodoAST {
     public nodoAST(String valor) {
         this.hijos= new LinkedList();
         this.valor=valor;    
-    
     }
 
     

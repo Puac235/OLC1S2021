@@ -1,3 +1,48 @@
 //PRIMITIVOS
 imprimir(100+32 > 345 || 235 == 234 + 1);
 imprimir(!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!true);
+imprimir(!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!(100+32 > 345 || 235 == 234 + 1));
+
+si(100 < 10){
+    imprimir("100 es menor a 10 :D");
+}
+sino si (-50 > 0){
+    imprimir("-50 es mayor a 0");
+}
+sino{
+    si(true){
+        imprimir("Imprime esto :p");
+        si(true){
+            imprimir("Imprime esto :p");
+        }
+    }
+    si(50 >= 50){
+        imprimir("Imprime esto tambien");
+    }
+    imprimir("-50 es menor a 0");
+}
+
+entero variable = 500;
+imprimir("Variable anterior: " + variable);
+variable = 100;
+imprimir("Nueva variable: " + variable);
+
+entero contador = 0;
+
+mientras(false){
+    
+    imprimir(contador);
+    contador = contador + 1;
+    si(contador == 5){
+        continuar;
+    }
+    
+}
+imprimir("////////////////////////");
+hacer{
+    imprimir(contador);
+    contador = contador + 1;
+    si(contador == 5){
+        parar;
+    }
+}mientras(false);

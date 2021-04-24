@@ -112,7 +112,7 @@ public class JPR {
     public static String getDot(nodoAST raiz)
     {
         grafo = "";
-        grafo += "digraph {\n";
+        grafo += "digraph {\n";//                         "     \"
         grafo += "n0[label=\"" + raiz.getValor().replace("\"", "\\\"") + "\"];\n";
         c = 1;
         recorrerAST("n0",raiz);

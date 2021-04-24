@@ -55,12 +55,26 @@ CARACTER = [\']([^\t\'\"\n]|(\\\")|(\\n)|(\\\')|(\\t))?[\']
 
 
     //---------------AREA PALABRAS RESERVADAS-------------------------------
-    "imprimir"           {return new Symbol(sym.RPRINT,yyline,yychar, yytext());}
+    "imprimir"          {return new Symbol(sym.RPRINT,yyline,yychar, yytext());}
+    "si"                {return new Symbol(sym.RIF,yyline,yychar, yytext());}
+    "sino"              {return new Symbol(sym.RELSE,yyline,yychar, yytext());}
+    "parar"             {return new Symbol(sym.RBREAK,yyline,yychar, yytext());}
+    "mientras"             {return new Symbol(sym.RWHILE,yyline,yychar, yytext());}
+    "hacer"                {return new Symbol(sym.RDO,yyline,yychar, yytext());}
+    "continuar"          {return new Symbol(sym.RCONTINUE,yyline,yychar, yytext());}
+
+    "entero"          {return new Symbol(sym.RENTERO,yyline,yychar, yytext());}
+    "decimal"          {return new Symbol(sym.RDECIMAL,yyline,yychar, yytext());}
+    "caracter"          {return new Symbol(sym.RCARACTER,yyline,yychar, yytext());}
+    "booleano"          {return new Symbol(sym.RBOOLEANO,yyline,yychar, yytext());}
+    "cadena"          {return new Symbol(sym.RCADENA,yyline,yychar, yytext());}
 
 
     //------------------------------SIMBOLOS---------------------------------
     "("           {return new Symbol(sym.PARA,yyline,yychar, yytext());}
     ")"           {return new Symbol(sym.PARC,yyline,yychar, yytext());}
+    "{"           {return new Symbol(sym.LLAVEA,yyline,yychar, yytext());}
+    "}"           {return new Symbol(sym.LLAVEC,yyline,yychar, yytext());}
     "+"           {return new Symbol(sym.MAS,yyline,yychar, yytext());}
     "-"           {return new Symbol(sym.MENOS,yyline,yychar, yytext());}
     "*"           {return new Symbol(sym.POR,yyline,yychar, yytext());}

@@ -10,7 +10,15 @@ import Expresiones.Primitivo;
 import Expresiones.Aritmetica.OperadorAritmetico;
 import Expresiones.Logica.OperadorLogico;
 import Expresiones.Relacional.OperadorRelacional;
+import Expresiones.Identificador;
 import Instrucciones.Imprimir;
+import Instrucciones.If;
+import Instrucciones.Mientras;
+import Instrucciones.HacerMientras;
+import Instrucciones.Detener;
+import Instrucciones.Continue;
+import Instrucciones.Declaracion;
+import Instrucciones.Asignacion;
 import TablaSimbolos.Arbol;
 import TablaSimbolos.Tipo;
 import TablaSimbolos.Tipo.Tipos;
@@ -44,12 +52,14 @@ parser code
 :} 
 
 terminal String IDENTIFICADOR, CADENA, ENTERO, DECIMAL, BOOLEANO, CARACTER;
-terminal String RPRINT;
+terminal String RPRINT,RIF,RELSE,RBREAK,RWHILE,RDO,RCONTINUE;
 
 terminal String LLAVEA, LLAVEC, PARA, PARC;
 terminal String MAS, MENOS, POR, DIV, POT, MOD;
 terminal String IGUAL, MENORQUE, MAYORQUE, AND, OR, NOT;
 terminal String PUNTOYCOMA;
+
+terminal String RENTERO,RDECIMAL,RCARACTER,RBOOLEANO,RCADENA;
 
 terminal String UMENOS;
 terminal String DIF;
@@ -58,6 +68,15 @@ non terminal ini;
 non terminal ArrayList<AST> instrucciones;
 non terminal AST instruccion;
 non terminal AST defprint;
+non terminal AST defif;
+non terminal AST defwhile;
+non terminal AST defdowhile;
+non terminal AST parar;
+non terminal AST continuar;
+non terminal AST declaracion;
+non terminal AST asignacion;
+non terminal Tipo tipos;
+non terminal ArrayList<AST> bloqueSentencias;
 
 non terminal AST expresion;
 
@@ -87,11 +106,61 @@ instrucciones ::=
 
 instruccion ::= 
    defprint:a PUNTOYCOMA         {:RESULT = a;:}
- | error:e PUNTOYCOMA  {: System.out.println("Este es un error sintactico D:"); :}
+   | defif:a                       {:RESULT = a;:}
+   | defwhile:a                    {:RESULT = a;:}
+   | defdowhile:a PUNTOYCOMA              {:RESULT = a;:}
+   | parar:a PUNTOYCOMA              {:RESULT = a;:}
+   | continuar:a PUNTOYCOMA              {:RESULT = a;:}
+   | declaracion:a PUNTOYCOMA            {:RESULT = a;:}
+   | asignacion:a PUNTOYCOMA            {:RESULT = a;:}
+   | error:e PUNTOYCOMA  {: System.out.println("Este es un error sintactico D:"); :}
+;
+
+declaracion ::=
+    tipos:a IDENTIFICADOR:b IGUAL expresion:c   {:RESULT= new Declaracion(a, b, c, aleft, aright);:}
+    | tipos:a IDENTIFICADOR:b                   {:RESULT= new Declaracion(a, b, aleft, aright);:}
+;
+
+asignacion ::=
+    IDENTIFICADOR:a IGUAL expresion:b   {:RESULT= new Asignacion(a, b, aleft, aright);:}
+;
+
+tipos ::=
+    RENTERO             {:RESULT= new Tipo(Tipos.ENTERO);:}
+    |RDECIMAL           {:RESULT= new Tipo(Tipos.DECIMAL);:}
+    |RCARACTER          {:RESULT= new Tipo(Tipos.CARACTER);:}
+    |RBOOLEANO          {:RESULT= new Tipo(Tipos.BOOLEANO);:}
+    |RCADENA            {:RESULT= new Tipo(Tipos.CADENA);:}
 ;
 
 defprint ::=
    RPRINT PARA expresion:a PARC {:RESULT= new Imprimir(a, aleft, aright);:}
+;
+
+defif ::=
+ RIF PARA expresion:a PARC bloqueSentencias:b {:RESULT = new If(a, b, aleft, aright);:}
+ | RIF PARA expresion:a PARC bloqueSentencias:b RELSE bloqueSentencias:c {:RESULT = new If(a, b, c, aleft, aright);:}
+ | RIF PARA expresion:a PARC bloqueSentencias:b RELSE defif:c {:RESULT = new If(a, b, c, aleft, aright);:}
+;
+
+defwhile ::=
+   RWHILE PARA expresion:a PARC bloqueSentencias:b {:RESULT = new Mientras(a, b, aleft, aright);:}
+;
+
+defdowhile ::=
+   RDO bloqueSentencias:a RWHILE PARA expresion:b PARC {:RESULT = new HacerMientras(a, b, aleft, aright);:}
+;
+
+parar ::=
+   RBREAK {:RESULT = new Detener();:}
+;
+
+continuar ::=
+   RCONTINUE {:RESULT = new Continue();:}
+;
+
+bloqueSentencias ::=
+   LLAVEA instrucciones:a LLAVEC {:RESULT = a;:}
 ;
 
 expresion ::=
@@ -117,4 +186,5 @@ expresion ::=
  | BOOLEANO:a   {:RESULT= new Primitivo(new Tipo(Tipos.BOOLEANO), Boolean.parseBoolean(a), aleft, aright);:}
  | CADENA:a     {:RESULT= new Primitivo(new Tipo(Tipos.CADENA), a, aleft, aright);:}
  | CARACTER:a   {:RESULT= new Primitivo(new Tipo(Tipos.CARACTER), a, aleft, aright);:}
+ | IDENTIFICADOR:a {:RESULT= new Identificador(a, aleft, aright);:}
 ;

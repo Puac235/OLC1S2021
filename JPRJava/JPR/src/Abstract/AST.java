@@ -14,9 +14,7 @@ public abstract class AST {
     public int fila;
     public int columna;
 
-    public Object interpretar(Tabla tabla, Arbol tree) {
-        return null;
-    }
+    public abstract Object interpretar(Tabla tabla, Arbol tree);
     
     public abstract nodoAST getNodo();
 
